@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Управление ПК</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { background: #1e1e1e; color: #fff; font-family: Arial; padding: 10px; }
+    button { width: 100%; padding: 14px; margin: 6px 0; font-size: 18px; border: none; border-radius: 10px; background: #2b2b2b; color: #fff; cursor: pointer; transition: 0.2s; }
+    button:active { background: #3a3a3a; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  </style>
+</head>
+<body>
+  <h3>🕹 Панель управления</h3>
+  <button onclick="send('📸 Скрин')">📸 Скрин</button>
+  <button onclick="send('📊 Статус')">📊 Статус</button>
+  <div class="grid">
+    <button onclick="send('🔊 50%')">🔊 50%</button>
+    <button onclick="send('🔇 Mute/Unmute')">🔇 Mute</button>
+    <button onclick="send('🔒 Блок')">🔒 Блок</button>
+    <button onclick="send('🖥 Выкл ПК')">🖥 Выкл ПК</button>
+    <button onclick="send('🔄 Перезапуск проводника')">🔄 Проводник</button>
+    <button onclick="send('💱 Курс USD')">💱 USD</button>
+  </div>
+  <button onclick="Telegram.WebApp.close()">❌ Закрыть</button>
+
+  <script>
+    function send(command) {
+      Telegram.WebApp.sendData(command);
+      Telegram.WebApp.close();
+    }
+    Telegram.WebApp.ready();
+  </script>
+</body>
+</html>
