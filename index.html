@@ -2,104 +2,139 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PC Remote Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PC Remote Control Pro</title>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 12px;
             background: var(--tg-theme-bg-color, #f2f2f7);
-            color: var(--tg-theme-text-color, #000000);
+            color: var(--tg-theme-text-color, #000);
+            padding-bottom: 80px;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+
+        /* Секции */
+        .section {
+            background: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--tg-theme-hint-color, #8e8e93);
+        }
+
+        /* Джойстик */
+        .joystick-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        canvas {
+            background: var(--tg-theme-bg-color, #e9e9ef);
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            touch-action: none;
+            width: 200px;
+            height: 200px;
+        }
+        .joystick-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .joystick-buttons button {
+            background: var(--tg-theme-button-color, #2481cc);
+            padding: 10px 20px;
+            border-radius: 40px;
+        }
+
+        /* Ползунок громкости */
+        .volume-slider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .volume-slider input {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--tg-theme-hint-color, #c6c6c8);
+        }
+        .volume-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Клавиатура */
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .key {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 50px;
+            text-align: center;
+        }
+        .key-wide {
+            min-width: 80px;
+        }
+        .key-special {
+            background: var(--tg-theme-hint-color, #8e8e93);
+        }
+
+        /* Сетка кнопок */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             gap: 10px;
-            margin-bottom: 20px;
         }
         button {
             background: var(--tg-theme-button-color, #2481cc);
             color: var(--tg-theme-button-text-color, #ffffff);
             border: none;
-            padding: 12px 8px;
+            padding: 12px 6px;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: opacity 0.2s;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transition: opacity 0.1s;
         }
         button:active {
             opacity: 0.7;
         }
         .danger {
             background-color: #ff3b30;
-        }
-        .group-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin: 15px 0 8px 0;
-            color: var(--tg-theme-hint-color, #8e8e93);
-        }
-        .input-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .input-row input {
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--tg-theme-hint-color, #c6c6c8);
-            background: var(--tg-theme-secondary-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 14px;
-        }
-        .input-row button {
-            padding: 10px 16px;
-            white-space: nowrap;
-        }
-        .prompt-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .prompt-box {
-            background: var(--tg-theme-bg-color);
-            border-radius: 20px;
-            padding: 20px;
-            width: 80%;
-            max-width: 300px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .prompt-box input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-        }
-        .prompt-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
         }
         .status {
             background: var(--tg-theme-secondary-bg-color, #e9e9ef);
@@ -110,330 +145,413 @@
             text-align: center;
             color: var(--tg-theme-hint-color);
         }
+        .text-input-area {
+            background: var(--tg-theme-bg-color, #fff);
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+        }
+        .text-input-area input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--tg-theme-text-color);
+            font-size: 16px;
+            outline: none;
+        }
+
         @media (prefers-color-scheme: dark) {
             body { background: #000; color: #fff; }
-            .input-row input { background: #1c1c1e; border-color: #38383a; color: #fff; }
-            .status { background: #1c1c1e; }
+            .section { background: #1c1c1e; }
+            canvas { background: #2c2c2e; }
+            .text-input-area { background: #1c1c1e; border-color: #38383a; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="grid" id="buttonsGrid"></div>
-    <div class="status" id="statusMsg">🟢 Инициализация...</div>
+    <!-- Джойстик + управление мышью -->
+    <div class="section">
+        <div class="section-title">🖱 Управление мышью (джойстик)</div>
+        <div class="joystick-container">
+            <canvas id="joystickCanvas" width="200" height="200"></canvas>
+        </div>
+        <div class="joystick-buttons">
+            <button id="leftClickBtn">🖯 ЛКМ</button>
+            <button id="rightClickBtn">🖰 ПКМ</button>
+            <button id="scrollUpBtn">🔼 Скролл ↑</button>
+            <button id="scrollDownBtn">🔽 Скролл ↓</button>
+        </div>
+    </div>
+
+    <!-- Громкость -->
+    <div class="section">
+        <div class="section-title">🔊 Громкость</div>
+        <div class="volume-slider">
+            <span>🔉</span>
+            <input type="range" id="volumeSlider" min="0" max="100" value="50">
+            <span class="volume-value" id="volumeValue">50%</span>
+            <button id="muteBtn">🔇 Mute</button>
+        </div>
+    </div>
+
+    <!-- Ввод текста и клавиатура -->
+    <div class="section">
+        <div class="section-title">⌨ Ввод текста</div>
+        <div class="text-input-area">
+            <input type="text" id="textInput" placeholder="Введите текст...">
+            <button id="sendTextBtn">📤 Отправить</button>
+            <button id="clearInputBtn">🗑</button>
+        </div>
+        <div id="virtualKeyboard" class="keyboard"></div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="section">
+        <div class="section-title">⚡ Быстрые действия</div>
+        <div class="grid" id="quickGrid"></div>
+    </div>
+
+    <!-- Полный список команд -->
+    <div class="section">
+        <div class="section-title">📋 Все команды</div>
+        <div class="grid" id="fullGrid"></div>
+    </div>
+
+    <div class="status" id="statusMsg">🟢 Готово</div>
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-    // Инициализация WebApp
     const tg = window.Telegram.WebApp;
     tg.expand();
     tg.enableClosingConfirmation();
     tg.ready();
 
-    // DOM элементы
-    const grid = document.getElementById('buttonsGrid');
-    const statusDiv = document.getElementById('statusMsg');
-
-    // Функция отправки команды (без параметров)
-    function sendCommand(cmd) {
-        tg.sendData(cmd);
-        setStatus(`✅ Отправлено: ${cmd}`);
+    // === Отправка команд ===
+    function sendCommand(cmd, param = null) {
+        let data = cmd;
+        if (param !== null && param !== undefined) data = `${cmd}|${param}`;
+        tg.sendData(data);
+        setStatus(`✅ ${cmd} ${param ? '('+param+')' : ''}`);
     }
 
-    // Функция отправки команды с параметром (через prompt)
     function sendCommandWithParam(cmdType, promptText, example = "") {
         tg.showPopup({
             title: cmdType,
             message: promptText + (example ? `\nПример: ${example}` : ''),
             buttons: [{type: "default", text: "Отправить"}, {type: "cancel"}],
             input_placeholder: example
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText && inputText.trim()) {
-                const fullCmd = `${cmdType}|${inputText.trim()}`;
-                tg.sendData(fullCmd);
-                setStatus(`✅ Отправлено: ${cmdType} | ${inputText.trim()}`);
-            } else if (buttonId === "default" && !inputText) {
+        }, (btnId, inputText) => {
+            if (btnId === "default" && inputText && inputText.trim()) {
+                sendCommand(cmdType, inputText.trim());
+            } else if (btnId === "default") {
                 tg.showAlert("Не введены данные");
             }
         });
     }
 
-    // Функция для горячих клавиш (отдельный popup)
-    function sendHotkey() {
-        tg.showPopup({
-            title: "Горячие клавиши",
-            message: "Введите комбинацию через + (например: ctrl+c или alt+tab)",
-            buttons: [{type: "default", text: "Нажать"}, {type: "cancel"}],
-            input_placeholder: "ctrl+c"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText && inputText.trim()) {
-                const fullCmd = `hotkey|${inputText.trim()}`;
-                tg.sendData(fullCmd);
-                setStatus(`✅ Горячая клавиша: ${inputText.trim()}`);
-            }
-        });
+    function setStatus(msg) {
+        const el = document.getElementById('statusMsg');
+        el.innerHTML = msg;
+        setTimeout(() => {
+            if (el.innerHTML === msg) el.innerHTML = "✅ Готово";
+        }, 2000);
     }
 
-    // Функция для голосового текста
-    function sendTTS() {
-        tg.showPopup({
-            title: "🎤 Озвучить текст",
-            message: "Введите текст для синтеза речи",
-            buttons: [{type: "default", text: "Озвучить"}, {type: "cancel"}],
-            input_placeholder: "Привет, я бот"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText && inputText.trim()) {
-                tg.sendData(`tts|${inputText.trim()}`);
-                setStatus(`🗣️ Озвучивание: ${inputText.trim().substring(0, 30)}...`);
-            }
-        });
+    // === Джойстик ===
+    const canvas = document.getElementById('joystickCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDragging = false;
+    let centerX = 100, centerY = 100;
+    let stickX = 100, stickY = 100;
+    let lastSentX = 0, lastSentY = 0;
+    let sendInterval = null;
+    const SENSITIVITY = 4; // пикселей перемещения = 1 шаг движения мыши
+
+    function drawJoystick() {
+        ctx.clearRect(0, 0, 200, 200);
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 80, 0, 2 * Math.PI);
+        ctx.fillStyle = '#d1d1d6';
+        ctx.fill();
+        ctx.strokeStyle = '#8e8e93';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(stickX, stickY, 30, 0, 2 * Math.PI);
+        ctx.fillStyle = '#007aff';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
     }
 
-    function sendTypeText() {
-        tg.showPopup({
-            title: "⌨ Ввод текста",
-            message: "Введите текст, который будет вставлен в активное поле",
-            buttons: [{type: "default", text: "Вставить"}, {type: "cancel"}],
-            input_placeholder: "Текст..."
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`type|${inputText}`);
-                setStatus(`✍️ Текст отправлен`);
-            }
-        });
+    function handleTouchStart(e) {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const touch = e.touches[0];
+        let mouseX = (touch.clientX - rect.left) * scaleX;
+        let mouseY = (touch.clientY - rect.top) * scaleY;
+        isDragging = true;
+        updateStick(mouseX, mouseY);
+        startSending();
     }
 
-    function sendKillProcess() {
-        tg.showPopup({
-            title: "🛑 Убить процесс",
-            message: "Введите имя процесса (например: chrome.exe, notepad.exe)",
-            buttons: [{type: "default", text: "Убить"}, {type: "cancel"}],
-            input_placeholder: "chrome.exe"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`kill|${inputText}`);
-                setStatus(`🔫 Процесс ${inputText} будет завершён`);
-            }
-        });
+    function handleTouchMove(e) {
+        e.preventDefault();
+        if (!isDragging) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const touch = e.touches[0];
+        let mouseX = (touch.clientX - rect.left) * scaleX;
+        let mouseY = (touch.clientY - rect.top) * scaleY;
+        updateStick(mouseX, mouseY);
     }
 
-    function sendNotification() {
-        tg.showPopup({
-            title: "🔔 Уведомление",
-            message: "Введите заголовок и текст через |",
-            buttons: [{type: "default", text: "Показать"}, {type: "cancel"}],
-            input_placeholder: "Заголовок|Текст уведомления"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                const parts = inputText.split('|');
-                if (parts.length >= 2) {
-                    tg.sendData(`notify|${parts[0]}|${parts.slice(1).join('|')}`);
-                } else {
-                    tg.sendData(`notify|${inputText}|(без текста)`);
+    function handleTouchEnd(e) {
+        e.preventDefault();
+        isDragging = false;
+        stickX = centerX;
+        stickY = centerY;
+        drawJoystick();
+        stopSending();
+        // Отправляем нулевое перемещение для остановки
+        sendCommand('mouse_move', '0,0');
+    }
+
+    function updateStick(x, y) {
+        let dx = x - centerX;
+        let dy = y - centerY;
+        let distance = Math.hypot(dx, dy);
+        let maxRadius = 70;
+        if (distance > maxRadius) {
+            dx = dx / distance * maxRadius;
+            dy = dy / distance * maxRadius;
+        }
+        stickX = centerX + dx;
+        stickY = centerY + dy;
+        drawJoystick();
+        // Сохраняем вектор для интервальной отправки
+        window.joyVector = { dx: Math.round(dx / SENSITIVITY), dy: Math.round(dy / SENSITIVITY) };
+    }
+
+    function startSending() {
+        if (sendInterval) clearInterval(sendInterval);
+        sendInterval = setInterval(() => {
+            if (window.joyVector && (window.joyVector.dx !== 0 || window.joyVector.dy !== 0)) {
+                sendCommand('mouse_move', `${window.joyVector.dx},${window.joyVector.dy}`);
+            }
+        }, 50);
+    }
+
+    function stopSending() {
+        if (sendInterval) clearInterval(sendInterval);
+        sendInterval = null;
+        window.joyVector = { dx: 0, dy: 0 };
+    }
+
+    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchend', handleTouchEnd);
+    drawJoystick();
+
+    // Кнопки мыши
+    document.getElementById('leftClickBtn').addEventListener('click', () => sendCommand('mouse_click', 'left'));
+    document.getElementById('rightClickBtn').addEventListener('click', () => sendCommand('mouse_click', 'right'));
+    document.getElementById('scrollUpBtn').addEventListener('click', () => sendCommand('mouse_scroll', 'up'));
+    document.getElementById('scrollDownBtn').addEventListener('click', () => sendCommand('mouse_scroll', 'down'));
+
+    // === Громкость ===
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+    volumeSlider.addEventListener('input', (e) => {
+        let val = e.target.value;
+        volumeValue.innerText = val + '%';
+        sendCommand('volume_set', val);
+    });
+    document.getElementById('muteBtn').addEventListener('click', () => sendCommand('mute_toggle'));
+
+    // === Виртуальная клавиатура ===
+    const keysLayout = [
+        ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '⌫'],
+        ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+        ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
+        ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
+        ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Ctrl']
+    ];
+    const keyboardDiv = document.getElementById('virtualKeyboard');
+    let caps = false;
+    let shift = false;
+
+    function updateKeyLabels() {
+        document.querySelectorAll('.key').forEach(btn => {
+            let original = btn.getAttribute('data-original');
+            if (original) {
+                let newLabel = original;
+                if (caps || shift) newLabel = original.toUpperCase();
+                if (original.length === 1 && /[a-z]/i.test(original)) {
+                    btn.innerText = newLabel;
                 }
-                setStatus(`🔔 Уведомление отправлено`);
             }
         });
     }
 
-    function sendShutdownTimer() {
-        tg.showPopup({
-            title: "⏲ Выключение через",
-            message: "Введите количество минут",
-            buttons: [{type: "default", text: "Установить"}, {type: "cancel"}],
-            input_placeholder: "5"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText && !isNaN(parseInt(inputText))) {
-                tg.sendData(`shutdowntimer|${parseInt(inputText)}`);
-                setStatus(`⏲️ Выключение через ${inputText} мин`);
-            } else if (buttonId === "default") {
-                tg.showAlert("Нужно число");
+    function createKeyboard() {
+        keyboardDiv.innerHTML = '';
+        for (let row of keysLayout) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'keyboard-row';
+            for (let key of row) {
+                const btn = document.createElement('button');
+                btn.className = 'key';
+                if (key === 'Enter' || key === '⌫' || key === 'Tab' || key === 'Caps' || key === 'Shift' || key === 'Space' || key === 'Ctrl' || key === 'Alt' || key === 'Win') {
+                    btn.classList.add('key-wide', 'key-special');
+                }
+                btn.innerText = key;
+                btn.setAttribute('data-original', key);
+                if (key === 'Caps') {
+                    btn.onclick = () => { caps = !caps; updateKeyLabels(); btn.style.backgroundColor = caps ? '#ff9f0a' : ''; };
+                } else if (key === 'Shift') {
+                    btn.onclick = () => { shift = !shift; updateKeyLabels(); setTimeout(() => { shift = false; updateKeyLabels(); }, 300); };
+                } else if (key === '⌫') {
+                    btn.onclick = () => {
+                        let input = document.getElementById('textInput');
+                        input.value = input.value.slice(0, -1);
+                    };
+                } else if (key === 'Enter') {
+                    btn.onclick = () => sendTextFromInput();
+                } else if (key === 'Space') {
+                    btn.onclick = () => {
+                        let input = document.getElementById('textInput');
+                        input.value += ' ';
+                    };
+                } else if (key === 'Tab') {
+                    btn.onclick = () => {
+                        let input = document.getElementById('textInput');
+                        input.value += '\t';
+                    };
+                } else if (key === 'Ctrl' || key === 'Alt' || key === 'Win') {
+                    btn.onclick = () => sendCommand('keypress', key.toLowerCase());
+                } else {
+                    btn.onclick = () => {
+                        let char = btn.innerText;
+                        let input = document.getElementById('textInput');
+                        input.value += char;
+                        if (shift) { shift = false; updateKeyLabels(); }
+                    };
+                }
+                rowDiv.appendChild(btn);
             }
-        });
+            keyboardDiv.appendChild(rowDiv);
+        }
+        updateKeyLabels();
     }
+    createKeyboard();
 
-    function sendDelayedScreenshot() {
-        tg.showPopup({
-            title: "🕹 Снимок через",
-            message: "Секунд до скриншота",
-            buttons: [{type: "default", text: "Сделать"}, {type: "cancel"}],
-            input_placeholder: "5"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText && !isNaN(parseInt(inputText))) {
-                tg.sendData(`delscr|${parseInt(inputText)}`);
-                setStatus(`📸 Скриншот через ${inputText} сек`);
-            }
-        });
+    function sendTextFromInput() {
+        let text = document.getElementById('textInput').value;
+        if (text.trim()) {
+            sendCommand('type', text);
+            document.getElementById('textInput').value = '';
+        } else {
+            tg.showAlert('Введите текст');
+        }
     }
+    document.getElementById('sendTextBtn').addEventListener('click', sendTextFromInput);
+    document.getElementById('clearInputBtn').addEventListener('click', () => {
+        document.getElementById('textInput').value = '';
+    });
 
-    function sendWebsite() {
-        tg.showPopup({
-            title: "🌐 Открыть сайт",
-            message: "Введите полный URL (https://...)",
-            buttons: [{type: "default", text: "Открыть"}, {type: "cancel"}],
-            input_placeholder: "https://google.com"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`site|${inputText}`);
-                setStatus(`🌍 Открываем ${inputText}`);
-            }
-        });
-    }
-
-    function sendProgram() {
-        tg.showPopup({
-            title: "🎮 Запустить программу",
-            message: "Имя или путь: notepad, calc, C:\\Program Files\\...",
-            buttons: [{type: "default", text: "Запустить"}, {type: "cancel"}],
-            input_placeholder: "notepad"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`runprog|${inputText}`);
-                setStatus(`🚀 Запуск ${inputText}`);
-            }
-        });
-    }
-
-    function sendRunCommand() {
-        tg.showPopup({
-            title: "⊞ Выполнить (Win+R)",
-            message: "Команда для выполнения",
-            buttons: [{type: "default", text: "Выполнить"}, {type: "cancel"}],
-            input_placeholder: "cmd /c dir"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`runcommand|${inputText}`);
-                setStatus(`⌨️ Выполняется: ${inputText}`);
-            }
-        });
-    }
-
-    function sendGoogle() {
-        tg.showPopup({
-            title: "🔍 Поиск Google",
-            message: "Что искать?",
-            buttons: [{type: "default", text: "Искать"}, {type: "cancel"}],
-            input_placeholder: "погода москва"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`google|${inputText}`);
-                setStatus(`🔎 Google: ${inputText}`);
-            }
-        });
-    }
-
-    function sendPing() {
-        tg.showPopup({
-            title: "🧭 Пинг",
-            message: "Хост или IP",
-            buttons: [{type: "default", text: "Пинговать"}, {type: "cancel"}],
-            input_placeholder: "8.8.8.8"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`ping|${inputText}`);
-                setStatus(`📡 Пингую ${inputText}...`);
-            }
-        });
-    }
-
-    function sendTracert() {
-        tg.showPopup({
-            title: "🌍 Трассировка",
-            message: "Хост или IP",
-            buttons: [{type: "default", text: "Трассировать"}, {type: "cancel"}],
-            input_placeholder: "google.com"
-        }, (buttonId, inputText) => {
-            if (buttonId === "default" && inputText) {
-                tg.sendData(`tracert|${inputText}`);
-                setStatus(`🛤️ Трассировка до ${inputText}...`);
-            }
-        });
-    }
-
-    // Массив кнопок: [текст, действие, цвет?]
-    const buttons = [
-        // Первая группа
-        {text: "📸 Скрин", action: () => sendCommand("screenshot")},
-        {text: "🎥 Видео (10с)", action: () => sendCommand("video")},
-        {text: "📊 Статус", action: () => sendCommand("status")},
-        {text: "🚀 Топ процессов", action: () => sendCommand("topproc")},
-        {text: "🔊 50%", action: () => sendCommand("vol50")},
-        {text: "🔇 Mute/Unmute", action: () => sendCommand("mute")},
-        {text: "🔊 +10", action: () => sendCommand("volup10")},
-        {text: "🔉 -10", action: () => sendCommand("voldown10")},
-        {text: "⏯️ Play/Pause", action: () => sendCommand("playpause")},
-        {text: "⏭️ Next", action: () => sendCommand("nexttrack")},
-        {text: "🖱 Мышь", action: () => tg.showAlert("Управление мышью пока через кнопки бота в чате (инлайн)")},
-        {text: "🎹 Нажать клавишу", action: () => sendCommandWithParam("keypress", "Введите клавишу (enter, f5, space)", "enter")},
-        {text: "📋 Копировать", action: () => sendCommand("copy")},
-        {text: "📋 Вставить", action: () => sendCommand("paste")},
-        {text: "⊟ Свернуть все", action: () => sendCommand("minimizeall")},
-        {text: "⊞ Выполнить", action: sendRunCommand},
-        {text: "📊 Диспетчер", action: () => sendCommand("taskmgr")},
-        {text: "🔒 Блок", action: () => sendCommand("lock")},
-        {text: "🖥 Выкл монитор", action: () => sendCommand("monitoroff")},
-        {text: "💤 Сон", action: () => sendCommand("sleep")},
-        {text: "🖥 Выкл ПК", action: () => sendCommand("shutdownnow")},
-        {text: "⏲ Выкл. через", action: sendShutdownTimer},
-        {text: "🔄 Caps Lock", action: () => sendCommand("capslock")},
-        {text: "🌐 Откр. сайт", action: sendWebsite},
-        {text: "🎮 Запуск прогр.", action: sendProgram},
-        {text: "🖼 Случайные обои", action: () => sendCommand("wallpaper")},
-        {text: "⌨ Горячие клавиши", action: sendHotkey},
-        {text: "📌 Заголовок окна", action: () => sendCommand("windowtitle")},
-        {text: "🧹 Корзина", action: () => sendCommand("emptybin")},
-        {text: "🔄 Перезапуск бота", action: () => sendCommand("restartbot")},
-        {text: "🔐 Пароль", action: () => sendCommand("genpass")},
-        {text: "😂 Шутка", action: () => sendCommand("joke")},
-        {text: "📝 Заметка", action: () => sendCommandWithParam("note", "Текст заметки (сохранится на рабочий стол)", "Купить молоко")},
-        {text: "🕹 Снимок через", action: sendDelayedScreenshot},
-        {text: "📁 Загрузки", action: () => sendCommand("downloads")},
-        {text: "🌐 IP Инфо", action: () => sendCommand("ipinfo")},
-        {text: "🎤 Голос", action: sendTTS},
-        {text: "⌨ Ввод текста", action: sendTypeText},
-        {text: "📋 Буфер", action: () => sendCommand("clipboard")},
-        {text: "📸 Камера", action: () => sendCommand("webcam")},
-        {text: "🛑 Убить процесс", action: sendKillProcess},
-        {text: "🔔 Уведомление", action: sendNotification},
-        {text: "🎯 Найти курсор", action: () => sendCommand("findcursor")},
-        {text: "🔄 Раскладка", action: () => sendCommand("switchlang")},
-        {text: "🔔 Сист. звук", action: () => sendCommand("beep")},
-        {text: "🖼 Скрин окна", action: () => sendCommand("winss")},
-        {text: "😈 Инверсия", action: () => sendCommand("invert")},
-        {text: "🖱 Поменять кнопки", action: () => sendCommand("swapmouse")},
-        {text: "🔍 Google", action: sendGoogle},
-        {text: "🔒 Блокировка ввода", action: () => sendCommand("blockinput")},
-        {text: "🔄 Перезапуск проводника", action: () => sendCommand("restartexp")},
-        {text: "💱 Курс USD", action: () => sendCommand("usd")},
-        {text: "🧭 Пинг", action: sendPing},
-        {text: "🌍 Трассировка", action: sendTracert},
-        {text: "📂 Temp", action: () => sendCommand("temp")},
-        {text: "📁 AppData", action: () => sendCommand("appdata")}
+    // === Список команд ===
+    const quickCommands = [
+        {text: "📸 Скрин", cmd: "screenshot"},
+        {text: "🎥 Видео", cmd: "video"},
+        {text: "📊 Статус", cmd: "status"},
+        {text: "🚀 Топ", cmd: "topproc"},
+        {text: "⏯️ Play/Pause", cmd: "playpause"},
+        {text: "⏭️ Next", cmd: "nexttrack"},
+        {text: "🖼 Обои", cmd: "wallpaper"},
+        {text: "🔐 Пароль", cmd: "genpass"},
+        {text: "😂 Шутка", cmd: "joke"},
+        {text: "🌐 IP", cmd: "ipinfo"},
+        {text: "📸 Камера", cmd: "webcam"},
+        {text: "💱 Курс USD", cmd: "usd"},
+        {text: "🧹 Корзина", cmd: "emptybin"},
+        {text: "🔒 Блок", cmd: "lock"},
+        {text: "💤 Сон", cmd: "sleep"},
+        {text: "📁 Загрузки", cmd: "downloads"},
+        {text: "📂 Temp", cmd: "temp"},
+        {text: "📁 AppData", cmd: "appdata"}
     ];
 
-    // Рендер сетки
-    function renderButtons() {
-        grid.innerHTML = "";
-        buttons.forEach(btn => {
-            const buttonEl = document.createElement("button");
-            buttonEl.innerText = btn.text;
-            if (btn.text.includes("Выкл ПК") || btn.text.includes("Убить") || btn.text.includes("Перезапуск бота")) {
-                buttonEl.classList.add("danger");
+    const fullCommands = [
+        {text: "🔊 +10", cmd: "volup10"},
+        {text: "🔉 -10", cmd: "voldown10"},
+        {text: "🔇 Mute", cmd: "mute_toggle"},
+        {text: "🎹 Клавиша", cmd: "keypress", param: true},
+        {text: "📋 Копировать", cmd: "copy"},
+        {text: "📋 Вставить", cmd: "paste"},
+        {text: "⊟ Свернуть все", cmd: "minimizeall"},
+        {text: "⊞ Выполнить", cmd: "runcommand", param: true},
+        {text: "📊 Диспетчер", cmd: "taskmgr"},
+        {text: "🖥 Выкл монитор", cmd: "monitoroff"},
+        {text: "🖥 Выкл ПК", cmd: "shutdownnow"},
+        {text: "⏲ Выкл через", cmd: "shutdowntimer", param: true},
+        {text: "🔄 Caps Lock", cmd: "capslock"},
+        {text: "🌐 Откр. сайт", cmd: "site", param: true},
+        {text: "🎮 Запуск прогр.", cmd: "runprog", param: true},
+        {text: "⌨ Горячие клавиши", cmd: "hotkey", param: true},
+        {text: "📌 Заголовок окна", cmd: "windowtitle"},
+        {text: "🔄 Перезапуск бота", cmd: "restartbot", danger: true},
+        {text: "📝 Заметка", cmd: "note", param: true},
+        {text: "🕹 Снимок через", cmd: "delscr", param: true},
+        {text: "🎤 Голос", cmd: "tts", param: true},
+        {text: "📋 Буфер", cmd: "clipboard"},
+        {text: "🛑 Убить процесс", cmd: "kill", param: true},
+        {text: "🔔 Уведомление", cmd: "notify", param: true},
+        {text: "🎯 Найти курсор", cmd: "findcursor"},
+        {text: "🔄 Раскладка", cmd: "switchlang"},
+        {text: "🔔 Сист. звук", cmd: "beep"},
+        {text: "🖼 Скрин окна", cmd: "winss"},
+        {text: "😈 Инверсия", cmd: "invert"},
+        {text: "🖱 Поменять кнопки", cmd: "swapmouse"},
+        {text: "🔍 Google", cmd: "google", param: true},
+        {text: "🔒 Блокировка ввода", cmd: "blockinput"},
+        {text: "🔄 Перезапуск проводника", cmd: "restartexp"},
+        {text: "🧭 Пинг", cmd: "ping", param: true},
+        {text: "🌍 Трассировка", cmd: "tracert", param: true}
+    ];
+
+    function renderGrid(containerId, commands) {
+        const grid = document.getElementById(containerId);
+        grid.innerHTML = '';
+        commands.forEach(cmd => {
+            const btn = document.createElement('button');
+            btn.innerText = cmd.text;
+            if (cmd.danger) btn.classList.add('danger');
+            if (cmd.param) {
+                btn.onclick = () => sendCommandWithParam(cmd.cmd, `Введите параметр для ${cmd.text}`, cmd.example || '');
+            } else {
+                btn.onclick = () => sendCommand(cmd.cmd);
             }
-            buttonEl.addEventListener("click", btn.action);
-            grid.appendChild(buttonEl);
+            grid.appendChild(btn);
         });
     }
 
-    function setStatus(msg) {
-        statusDiv.innerHTML = msg;
-        setTimeout(() => {
-            if (statusDiv.innerHTML === msg) statusDiv.innerHTML = "✅ Готово";
-        }, 3000);
-    }
+    renderGrid('quickGrid', quickCommands);
+    renderGrid('fullGrid', fullCommands);
 
-    renderButtons();
+    // Дополнительная обработка для команд мыши (так как они не входят в стандартный список)
+    // Они уже реализованы через джойстик и кнопки.
+
+    // Сообщаем, что бот готов принимать новые команды (расширяем обработчик бота)
+    // В обработчике бота должны быть добавлены следующие команды (см. примечание в конце)
 </script>
 </body>
 </html>
