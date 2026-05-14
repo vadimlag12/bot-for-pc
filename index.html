@@ -102,6 +102,14 @@
             opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:100;
         }
         .toast.show { opacity:1; }
+        .error-banner {
+            background: #ff4444;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -110,7 +118,12 @@
     <span class="title">Пульт ПК (Live)</span>
 </div>
 
-<!-- Быстрые действия -->
+<!-- Блок ошибки (скрыт по умолчанию) -->
+<div id="errorBanner" class="error-banner" style="display: none;">
+    ⚠️ Не удалось определить ваш ID. Используется ID по умолчанию.
+</div>
+
+<!-- Весь интерфейс (как прежде) -->
 <div class="card">
     <div class="card-title">⚡ Быстрые действия</div>
     <div class="grid-3">
@@ -123,7 +136,6 @@
     </div>
 </div>
 
-<!-- Громкость и медиа -->
 <div class="card">
     <div class="card-title">🔊 Звук и медиа</div>
     <div class="slider-container">
@@ -144,7 +156,6 @@
     </div>
 </div>
 
-<!-- Мышь -->
 <div class="card">
     <div class="card-title">🖱️ Мышь</div>
     <div class="joystick-area">
@@ -168,7 +179,6 @@
     </div>
 </div>
 
-<!-- Система -->
 <div class="card">
     <div class="card-title">⚙️ Система</div>
     <div class="grid-3">
@@ -185,7 +195,6 @@
     </div>
 </div>
 
-<!-- Клавиатура и ввод -->
 <div class="card">
     <div class="card-title">⌨️ Клавиатура и ввод</div>
     <div class="grid-2">
@@ -208,7 +217,6 @@
     </div>
 </div>
 
-<!-- Запуск и поиск -->
 <div class="card">
     <div class="card-title">🚀 Запуск и поиск</div>
     <div class="input-row">
@@ -229,7 +237,6 @@
     </div>
 </div>
 
-<!-- Уведомления и голос -->
 <div class="card">
     <div class="card-title">🔔 Уведомления и голос</div>
     <div class="input-row">
@@ -243,7 +250,6 @@
     </div>
 </div>
 
-<!-- Инструменты -->
 <div class="card">
     <div class="card-title">🛠 Инструменты</div>
     <div class="grid-2">
@@ -290,13 +296,24 @@
     tg.ready();
     tg.expand();
 
-    const BOT_TOKEN = '8675156338:AAFEB5ztpm9KTx35ORklY9v1jVettYNHETM'; // ВАШ ТОКЕН
+    const BOT_TOKEN = '8675156338:AAFEB5ztpm9KTx35ORklY9v1jVettYNHETM';
     const API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
-    const chatId = tg.initDataUnsafe?.user?.id;
+
+    // --- Ваш ID (замените, если нужно) ---
+    const DEFAULT_CHAT_ID = 5756440559; // Ваш ADMIN_ID
+
+    // Пытаемся получить ID из Telegram
+    let chatId = tg.initDataUnsafe?.user?.id;
+
+    if (!chatId) {
+        // Показываем предупреждение и используем ID по умолчанию
+        document.getElementById('errorBanner').style.display = 'block';
+        chatId = DEFAULT_CHAT_ID;
+    }
 
     async function sendText(text) {
         if (!chatId) {
-            showToast('Нет chat_id');
+            showToast('chat_id не задан');
             return;
         }
         try {
